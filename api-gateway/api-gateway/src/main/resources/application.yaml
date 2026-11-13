@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routers:
+            - id: user-oauth
+              uri: lb://user-service
+              predicates:
+                  - Path=/oauth2/**,/login/oauth2/**
+
+            - id: user-service
+              uri: lb://user-service
+              predicates:
+                - Path=/users/**
+              filters:
+                - StripPrefix=1
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    access-token-expiry: 900
+    refresh-token-expiry: 604800
+
+
+server:
+  port: 8080
+
